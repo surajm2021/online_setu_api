@@ -87,7 +87,10 @@ class User(AbstractBaseUser):
         max_length=20,
         unique=True,
     )
-
+    is_verify = models.BooleanField(
+        verbose_name='is_verify',
+        default=False
+    )
 
     active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)  # a admin user; non super-user
@@ -109,3 +112,19 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username+"  "+self.phone
+
+
+class Otp(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    OTP = models.IntegerField(null=True)
+    attempts = models.IntegerField(default=5)
+    time_generate_otp = models.DateTimeField(auto_now_add=True, blank=True)
+
+    def get_time_diff(self):
+        if self.time_generate_otp:
+            now = datetime.datetime.utcnow().replace(tzinfo=utc)
+            timediff = now - self.time_generate_otp
+            return timediff.total_seconds()
+
+    def __str__(self):
+        return self.user.username
