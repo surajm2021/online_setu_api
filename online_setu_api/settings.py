@@ -25,7 +25,7 @@ SECRET_KEY = 'la_4(9&ibg03+j$$l160)+wdo923uth(6s6&&-^#2m#!p_2k=q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -126,6 +126,7 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT= '/home/surajshinare/online_setu_api/static'
 parent_dir = os.path.abspath(os.path.dirname(__file__) + '/..')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
