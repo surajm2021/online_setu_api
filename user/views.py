@@ -18,7 +18,6 @@ from user.models import User, Otp
 def logger_history_function(username, activity):
     flag = 0
     if User.objects.filter(username=username):
-        # print('username found in database')
         flag = 1
 
     if Token.objects.filter(key=username):
@@ -31,7 +30,7 @@ def logger_history_function(username, activity):
     #     client = MongoClient('mongodb://127.0.0.1:27017')
     #     print('database connection successfully')
     #     db = client.online_setu
-    #     mycollection = db[username]
+    #     mycollection = db[username]        # print('username found in database')
     #     print('my_collection')
     #     today = date.today()
     #     today = str(today)
@@ -300,6 +299,80 @@ def verify_opt(request):
             error = 'True'
             data = {'message': message, 'username': username, 'phone': phone, 'error': error, }
             return Response(data)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def mobile_no_change(request):
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        phone = request.POST.get('phone')
+        print(Token.objects.filter(key=token).count())
+        if Token.objects.filter(key=token).count() == 1:
+            token_obj = Token.objects.get(key=token)
+            user = token_obj.user
+            phone_old = user.phone
+            if phone != phone_old:
+                user.phone = phone
+                user.is_verify = False
+                user.save
+                error = "False"
+                message = "User phone number is updated.Phone number not verify please verify it"
+                token = token
+                data = {"error": error, "message": message, "token": token}
+                logger_history_function(token, message)
+                return Response(data)
+            else:
+                error = "False"
+                message = "User phone number is already correct."
+                token = token
+                data = {"error": error, "message": message, "token": token}
+                logger_history_function(token, message)
+                return Response(data)
+        error = "True"
+        message = "Token is not present or phone is not present."
+        token = "empty"
+        data = {"error": error, "message": message, "token": token}
+        return Response(data)
+    return Response()
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def password_change(request):
+    if request.method == 'POST':
+        password = request.POST.get('password')
+        re_password = request.POST.get('re_password')
+        token = request.POST.get('token')
+        if password == re_password:
+            if Token.objects.filter(key=token).exists():
+                token_obj = Token.objects.get(key=token)
+                user = token_obj.user
+                if user.password == password:
+                    error = 'True'
+                    message = 'password can\'t be old one'
+                    token = token
+                    data = {'error': error, 'message': message, 'token': token}
+                    logger_history_function(token, message)
+                    return Response(data)
+                user.password = password
+                user.save()
+                error = 'False'
+                message = 'password reset successfully'
+                token = token
+                data = {'error': error, 'message': message, 'token': token}
+                logger_history_function(token, message)
+                return Response(data)
+            error = 'True'
+            message = 'user is invalid'
+            token = 'empty'
+            data = {'error': error, 'message': message, 'token': token}
+            return Response(data)
+        error = 'True'
+        message = 'password not match'
+        token = 'empty'
+        data = {'error': error, 'message': message, 'token': token}
+        return Response(data)
 
 
 @api_view(['POST'])
