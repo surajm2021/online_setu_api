@@ -26,45 +26,45 @@ def logger_history_function(username, activity):
         token = Token.objects.get(key=username)
         username = token.user.username
         flag = 1
-
-    if flag == 1:
-        client = MongoClient('mongodb://127.0.0.1:27017')
-        print('database connection successfully')
-        db = client.online_setu
-        mycollection = db[username]
-        print('my_collection')
-        today = date.today()
-        today = str(today)
-        # today = '2019-12-31'
-        # print('today date : ' + today)
-        activity_and_time = str(datetime.now()) + '    ' + activity
-        # print(username)
-        if username in db.list_collection_names():
-            # print('usename found in document ')
-            result = mycollection.update({
-                'date': today
-            }, {
-                '$push': {
-                    "activity": activity_and_time,
-                }
-            })
-            # print(str(result['updatedExisting']) + ' date not found create new database')
-            if not result['updatedExisting']:
-                mycollection.insert({
-                    'user': username,
-                    "activity": [activity_and_time],
-                    "date": today
-                })
-                # print('new document create successful')
-        else:
-            # print('usename not found in document')
-            mycollection.insert({
-                'user': username,
-                "activity": [activity_and_time],
-                "date": today
-            })
-    else:
-        print('username not found')
+    #
+    # if flag == 1:
+    #     client = MongoClient('mongodb://127.0.0.1:27017')
+    #     print('database connection successfully')
+    #     db = client.online_setu
+    #     mycollection = db[username]
+    #     print('my_collection')
+    #     today = date.today()
+    #     today = str(today)
+    #     # today = '2019-12-31'
+    #     # print('today date : ' + today)
+    #     activity_and_time = str(datetime.now()) + '    ' + activity
+    #     # print(username)
+    #     if username in db.list_collection_names():
+    #         # print('usename found in document ')
+    #         result = mycollection.update({
+    #             'date': today
+    #         }, {
+    #             '$push': {
+    #                 "activity": activity_and_time,
+    #             }
+    #         })
+    #         # print(str(result['updatedExisting']) + ' date not found create new database')
+    #         if not result['updatedExisting']:
+    #             mycollection.insert({
+    #                 'user': username,
+    #                 "activity": [activity_and_time],
+    #                 "date": today
+    #             })
+    #             # print('new document create successful')
+    #     else:
+    #         # print('usename not found in document')
+    #         mycollection.insert({
+    #             'user': username,
+    #             "activity": [activity_and_time],
+    #             "date": today
+    #         })
+    # else:
+    #     print('username not found')
     return
 
 

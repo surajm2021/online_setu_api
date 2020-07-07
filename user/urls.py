@@ -8,5 +8,5 @@ urlpatterns = [
     path("login_user/", views.login_user, name="login_user"),
     path('logout_user/', views.logout, name='logout'),
     path('profile_user/', views.profileinfo, name='profile'),
-    path('login_user_by_otp/', views.verify_opt, name='verifyotp'),
+    path('login_user_by_otp/', views.verify_opt, name='verify_otp'),
 ]
