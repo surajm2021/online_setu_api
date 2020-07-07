@@ -382,7 +382,7 @@ def mobile_no_change(request):
         token = request.POST.get('token')
         phone = request.POST.get('phone')
         print(Token.objects.filter(key=token).count())
-        if Token.objects.filter(key=token).count()==1:
+        if Token.objects.filter(key=token).count() == 1:
             token_obj = Token.objects.get(key=token)
             user = token_obj.user
             phone_old = user.phone
@@ -399,6 +399,66 @@ def mobile_no_change(request):
             else:
                 error = "False"
                 message = "User phone number is already correct."
+                token = token
+                data = {"error": error, "message": message, "token": token}
+                logger_history_function(token, message)
+                return Response(data)
+        error = "True"
+        message = "Token is not present or phone is not present."
+        token = "empty"
+        data = {"error": error, "message": message, "token": token}
+        return Response(data)
+    return Response()
+
+
+def forgot_password(request):
+    if request.method == "POST":
+        phone_no = request.POST.get('phone_no')
+        user = User.objects.get(phone_no=phone_no)
+        if user:
+            token_obj = Token.objects.get(user=user)
+            random_number_list = [random.randint(0, 9) for p in range(0, 4)]
+            otp = ''.join(str(letter) for letter in random_number_list)
+            user = User.objects.get(username=user.username)
+            user.otp = otp
+            user.save()
+            # TODO...  create send_otp()
+            error = "False"
+            message = "OTP send on phone number please verify it"
+            token = token_obj.key
+            data = {"error": error, "message": message, "token": token}
+            return Response(data)
+        else:
+            error = "True"
+            message = "Token is not present or phone is not present."
+            token = "empty"
+            data = {"error": error, "message": message, "token": token}
+            return Response(data)
+    else:
+        error = "True"
+        message = "Token is not present or phone is not present."
+        token = "empty"
+        data = {"error": error, "message": message, "token": token}
+        return Response(data)
+
+
+def verify_forgot_password_otp(request):
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        otp = request.POST.get('otp')
+        if Token.objects.filter(key=token).count() == 1:
+            token_obj = Token.objects.get(key=token)
+            user = token_obj.usere
+            if otp != user.otp:
+                error = "False"
+                message = 'otp verify set new password now'
+                token = token
+                data = {"error": error, "message": message, "token": token}
+                logger_history_function(token, message)
+                return Response(data)
+            else:
+                error = "False"
+                message = "incorrect otp"
                 token = token
                 data = {"error": error, "message": message, "token": token}
                 logger_history_function(token, message)
